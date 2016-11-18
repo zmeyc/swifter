@@ -11,21 +11,21 @@ import Foundation
     import NSLinux
 #endif
 
-public class HttpServerIO {
+open class HttpServerIO {
     
-    private var listenSocket: Socket = Socket(socketFileDescriptor: -1)
-    private var clientSockets: Set<Socket> = []
-    private let clientSocketsLock = NSLock()
+    fileprivate var listenSocket: Socket = Socket(socketFileDescriptor: -1)
+    fileprivate var clientSockets: Set<Socket> = []
+    fileprivate let clientSocketsLock = NSLock()
     
-    public func start(listenPort: in_port_t = Constants.DEFAULT_PORT) throws {
+    open func start(_ listenPort: in_port_t = Constants.DEFAULT_PORT) throws {
         stop()
         listenSocket = try Socket.tcpSocketForListen(listenPort)
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
+        DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.background).async {
             while let socket = try? self.listenSocket.acceptClientSocket() {
                 HttpServerIO.lock(self.clientSocketsLock) {
                     self.clientSockets.insert(socket)
                 }
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)) {
+                DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.background).async {
                     let socketAddress = try? socket.peername()
                     let httpParser = HttpParser()                    
                     while var request = try? httpParser.readHttpRequest(socket) {
@@ -52,27 +52,27 @@ public class HttpServerIO {
         }
     }
     
-    public func select(method: String, url: String) -> ([String: String], HttpRequest -> HttpResponse) {
-        return ([:], { _ in HttpResponse.NotFound })
+    open func select(_ method: String, url: String) -> ([String: String], (HttpRequest) -> HttpResponse) {
+        return ([:], { _ in HttpResponse.notFound })
     }
     
-    public func stop() {
+    open func stop() {
         listenSocket.release()
         HttpServerIO.lock(self.clientSocketsLock) {
             for socket in self.clientSockets {
                 socket.shutdwn()
             }
-            self.clientSockets.removeAll(keepCapacity: true)
+            self.clientSockets.removeAll(keepingCapacity: true)
         }
     }
     
-    private class func lock(handle: NSLock, closure: () -> ()) {
+    fileprivate class func lock(_ handle: NSLock, closure: () -> ()) {
         handle.lock()
         closure()
         handle.unlock();
     }
     
-    private class func respond(socket: Socket, response: HttpResponse, keepAlive: Bool) throws {
+    fileprivate class func respond(_ socket: Socket, response: HttpResponse, keepAlive: Bool) throws {
         try socket.writeUTF8("HTTP/1.1 \(response.statusCode()) \(response.reasonPhrase())\r\n")
         
         let length = response.body()?.count ?? 0
