@@ -167,7 +167,7 @@ open class Socket: Hashable, Equatable {
     }
     
     fileprivate class func descriptionOfLastError() -> String {
-        return String(cString: UnsafePointer(strerror(errno))) ?? "Error: \(errno)"
+        return String(cString: UnsafePointer(strerror(errno)))
     }
     
     fileprivate class func setNoSigPipe(_ socket: Int32) {
@@ -185,7 +185,7 @@ open class Socket: Hashable, Equatable {
         #if os(Linux)
             shutdown(socket, Int32(SHUT_RDWR))
         #else
-            Darwin.shutdown(socket, SHUT_RDWR)
+            let _ = Darwin.shutdown(socket, SHUT_RDWR)
         #endif
     }
     
@@ -193,7 +193,7 @@ open class Socket: Hashable, Equatable {
         #if os(Linux)
             shutdown(socket, Int32(SHUT_RDWR))
         #else
-            Darwin.shutdown(socket, SHUT_RDWR)
+            let _ = Darwin.shutdown(socket, SHUT_RDWR)
         #endif
         close(socket)
     }

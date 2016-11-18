@@ -75,7 +75,7 @@ public struct HttpRequest {
                 return nil
             }
         } else {
-            nextMultiPartLine(&generator)
+            let _ = nextMultiPartLine(&generator)
         }
         var headers = [String: String]()
         while let line = nextMultiPartLine(&generator), !line.isEmpty {

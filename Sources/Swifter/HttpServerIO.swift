@@ -20,12 +20,12 @@ open class HttpServerIO {
     open func start(_ listenPort: in_port_t = Constants.DEFAULT_PORT) throws {
         stop()
         listenSocket = try Socket.tcpSocketForListen(listenPort)
-        DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.background).async {
+        DispatchQueue.global(qos: .background).async {
             while let socket = try? self.listenSocket.acceptClientSocket() {
                 HttpServerIO.lock(self.clientSocketsLock) {
                     self.clientSockets.insert(socket)
                 }
-                DispatchQueue.global(priority: DispatchQueue.GlobalQueuePriority.background).async {
+                DispatchQueue.global(qos: .background).async {
                     let socketAddress = try? socket.peername()
                     let httpParser = HttpParser()                    
                     while var request = try? httpParser.readHttpRequest(socket) {
