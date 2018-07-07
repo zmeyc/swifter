@@ -9,12 +9,12 @@ import Foundation
 extension String {
 
     public func split(_ separator: Character) -> [String] {
-        return self.characters.split { $0 == separator }.map(String.init)
+        return self.split { $0 == separator }.map(String.init)
     }
     
     public func replace(_ old: Character, new: Character) -> String {
         var buffer = [Character]()
-        self.characters.forEach { buffer.append($0 == old ? new : $0) }
+        self.forEach { buffer.append($0 == old ? new : $0) }
         return String(buffer)
     }
     
@@ -26,7 +26,7 @@ extension String {
     }
     
     public func removePercentEncoding() -> String {
-        var scalars = self.unicodeScalars
+        var scalars = self.suffix(from: self.startIndex).unicodeScalars
         var output = ""
         var bytesBuffer = [UInt8]()
         while let scalar = scalars.popFirst() {

@@ -32,9 +32,9 @@ open class HttpHandlers {
 #if os(Linux)
                 let rangeString = rangeHeader.substringFromIndex(HttpHandlers.rangePrefix.characters.count)
 #else
-                let rangeString = rangeHeader.substring(from: rangeHeader.characters.index(rangeHeader.startIndex, offsetBy: HttpHandlers.rangePrefix.characters.count))
+                let rangeString = rangeHeader[rangeHeader.index(rangeHeader.startIndex, offsetBy: HttpHandlers.rangePrefix.count)...]
 #endif
-                let rangeStringExploded = rangeString.split("-")
+                let rangeStringExploded = rangeString.split(separator: "-")
                 guard rangeStringExploded.count == 2 else {
                     return HttpResponse.badRequest
                 }

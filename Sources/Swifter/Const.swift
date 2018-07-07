@@ -12,11 +12,11 @@ import Foundation
     import NSLinux
 #endif
 
-struct Constants {
+public struct Constants {
     
-    static let VERSION      = "1.0.2"
-    static let DEFAULT_PORT = in_port_t(8080)
+    public static let VERSION      = "1.0.2"
+    public static let DEFAULT_PORT = in_port_t(8080)
     
-    static let CR           = UInt8(13)
-    static let NL           = UInt8(10)
+    public static let CR           = UInt8(13)
+    public static let NL           = UInt8(10)
 }

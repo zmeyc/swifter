@@ -16,7 +16,7 @@ open class HttpRouter {
     
     open func register(_ method: String?, path: String, handler: @escaping (HttpRequest) -> HttpResponse) {
         handlers.append((method, path.split("/"), handler))
-        handlers.sort { $0.0.pattern.count < $0.1.pattern.count }
+        handlers.sort { $0.pattern.count < $1.pattern.count }
     }
     
     open func unregister(_ method: String?, path: String) {
@@ -51,11 +51,11 @@ open class HttpRouter {
                     return nil
                 }
             }
-            if patternToken.characters.first == ":" {
+            if patternToken.first == ":" {
 #if os(Linux)
                 params[patternToken.substringFromIndex(1)] = valueToken
 #else
-                params[patternToken.substring(from: patternToken.characters.index(after: patternToken.characters.startIndex))] = valueToken
+                params[String(patternToken[patternToken.index(after: patternToken.startIndex)...])] = valueToken
 #endif
             } else {
                 if patternToken != valueToken {
